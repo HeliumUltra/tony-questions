@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>T&R Website — Tony's Fact Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Racing+Sans+One&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#16150F; --paper:#F7F7F5; --red:#C8102E; --line:#E2E0DB; --green:#1E7B34; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Archivo',sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;padding-bottom:120px}
+  header{background:var(--ink);color:#fff;padding:28px 20px;text-align:center}
+  header h1{font-family:'Racing Sans One',sans-serif;font-size:1.7rem;letter-spacing:.02em;text-transform:uppercase}
+  header h1 span{color:var(--red)}
+  header p{opacity:.75;margin-top:6px;font-size:.92rem}
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px}
+  .sec{margin-top:34px}
+  .sec-title{font-family:'Racing Sans One',sans-serif;text-transform:uppercase;font-size:1.15rem;color:var(--red);border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:4px}
+  .sec-sub{font-size:.88rem;opacity:.7;margin-bottom:14px}
+  .q{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:12px}
+  .q.answered{border-color:var(--green)}
+  .q-num{display:inline-block;background:var(--ink);color:#fff;font-weight:600;font-size:.78rem;border-radius:6px;padding:2px 8px;margin-bottom:8px}
+  .q-text{font-size:1rem;margin-bottom:12px}
+  .q-note{font-size:.85rem;opacity:.65;margin:-6px 0 12px}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .btns button{flex:1;min-width:90px;padding:12px 8px;border:2px solid var(--line);background:#fff;border-radius:8px;font-family:'Archivo';font-weight:600;font-size:.95rem;cursor:pointer}
+  .btns button.on-yes{background:var(--green);border-color:var(--green);color:#fff}
+  .btns button.on-no{background:var(--red);border-color:var(--red);color:#fff}
+  .btns button.on-unsure{background:var(--ink);border-color:var(--ink);color:#fff}
+  textarea{width:100%;border:1.5px solid var(--line);border-radius:8px;padding:10px;font-family:'Archivo';font-size:.95rem;min-height:52px;resize:vertical}
+  textarea:focus{outline:2px solid var(--red);border-color:var(--red)}
+  .footer-bar{position:fixed;bottom:0;left:0;right:0;background:var(--ink);padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .progress{color:#fff;font-size:.9rem;opacity:.85}
+  #finish{background:var(--red);color:#fff;border:none;border-radius:8px;padding:14px 26px;font-family:'Racing Sans One';text-transform:uppercase;font-size:1.05rem;letter-spacing:.04em;cursor:pointer}
+  #finish:disabled{opacity:.45;cursor:default}
+  .warn{background:#FFF4E0;border:1px solid #E8C378;border-radius:10px;padding:14px;margin:22px 0;font-size:.92rem}
+  @media(max-width:520px){ .btns button{min-width:70px;font-size:.88rem} }
+</style>
+</head>
+<body>
+<header>
+  <h1>T&amp;R <span>Website</span> Fact Check</h1>
+  <p>Tony — tap Yes / No / Not sure on each, add a comment where you have detail.<br>Takes about 20 minutes. Hit FINISH at the end to save your answers.</p>
+</header>
+
+<div class="wrap">
+  <div class="warn">⚠️ Please complete this in one sitting — answers aren't saved until you tap <b>FINISH &amp; DOWNLOAD</b> at the bottom, which saves a file to send back.</div>
+  <div id="form"></div>
+</div>
+
+<div class="footer-bar">
+  <span class="progress" id="prog">0 / 0 answered</span>
+  <button id="finish">Finish &amp; Download Answers</button>
+</div>
+
+<script>
+const SECTIONS = [
+ {t:"A. Shop-wide", s:"One answer each — these apply across the whole site.", q:[
+  {n:1, t:"Do you offer loaner cars, pickup & drop-off, or a shuttle?", y:1},
+  {n:2, t:"Can small preventative work (wipers, fluids) often be done same-day if people call ahead?", y:1},
+  {n:3, t:"Do you still offer fleet service? Any minimum fleet size or details?", y:1},
+  {n:4, t:"\"We work with most extended warranty providers\" — accurate? Any to name or avoid?", y:1},
+  {n:5, t:"Confirm: you do NOT do body/collision work?", y:1},
+  {n:6, t:"Is there an oldest-era cutoff for cars you'll take (generally or per brand)?", y:1},
+ ]},
+ {t:"B. Capabilities", s:"Yes / No / \"Yes, but…\" in the comment.", q:[
+  {n:7, t:"Carbon-ceramic brake service on exotics?", y:1},
+  {n:8, t:"Which automated/dual-clutch gearboxes do you service — Ferrari F1, Porsche PDK, Lamborghini e-gear/ISR, Mercedes 7G/9G-Tronic? (List in comment)", y:1},
+  {n:9, t:"Air/adaptive suspension service — Range Rover air, Porsche PASM, Bentley air, Mercedes AIRMATIC, Maserati Skyhook, Lambo lift systems? (Note any exceptions)", y:1},
+  {n:10, t:"Lexus hybrid system service?", y:1},
+  {n:11, t:"Electric vehicle service — BMW i3 specifically? (There's real search demand for this)", y:1},
+  {n:12, t:"Battery tender / storage-battery care for cars that sit?", y:1},
+  {n:13, t:"TPMS (tire pressure sensor) service?", y:1},
+  {n:14, t:"Exotic/performance tires — stocked, or special-order?", y:1},
+ ]},
+ {t:"C. Per-Brand Details", s:"The 'issues you see most' questions make the pages genuinely yours — a few plain sentences beat anything we could write.", q:[
+  {n:15, t:"FERRARI — Do you do engine-out major services? Which models?", y:1},
+  {n:16, t:"FERRARI — F1 gearbox service scope? Manual gearboxes too?", y:1},
+  {n:17, t:"FERRARI — Oldest Ferraris you'll take?", y:0},
+  {n:18, t:"FERRARI — In your own words: how do you approach a 348/355 belt service? (2–3 sentences — this goes on the website. Google already ranks you #1 for this.)", y:0},
+  {n:19, t:"MASERATI — Timing chain (Ghibli/QP V6) and cambelt/variator (older V8s) — is that an accurate picture of what you service?", y:1},
+  {n:20, t:"MASERATI — \"Purge valves & emissions faults are behind most Maserati check-engine lights\" — fair?", y:1},
+  {n:21, t:"MASERATI — Skyhook suspension service?", y:1},
+  {n:22, t:"MASERATI — The 2–3 issues you see most?", y:0},
+  {n:23, t:"LAMBORGHINI — Do you service the Urus?", y:1},
+  {n:24, t:"LAMBORGHINI — The 2–3 issues you see most (e.g., Gallardo e-gear wear)?", y:0},
+  {n:25, t:"BENTLEY — W12 engine work?", y:1},
+  {n:26, t:"BENTLEY — Bentayga serviced?", y:1},
+  {n:27, t:"BENTLEY — \"Parasitic battery drain is a common Bentley issue\" — fair?", y:1},
+  {n:28, t:"BENTLEY — The 2–3 issues you see most?", y:0},
+  {n:29, t:"PORSCHE — IMS bearing: do you replace/inspect, and what's your honest advice to 996/997.1 owners?", y:1},
+  {n:30, t:"PORSCHE — Cayenne/Macan spark plug services — routine work for you?", y:1},
+  {n:31, t:"PORSCHE — The 2–3 issues you see most?", y:0},
+  {n:32, t:"MERCEDES — Can you write to the Mercedes digital service record (DSB)? (If yes, we'll feature it)", y:1},
+  {n:33, t:"MERCEDES — AMG models: any limits?", y:1},
+  {n:34, t:"MERCEDES — The 2–3 issues you see most?", y:0},
+  {n:35, t:"BMW — M models: full service?", y:1},
+  {n:36, t:"AUDI — quattro system service?", y:1},
+  {n:37, t:"AUDI — Carbon cleaning on TFSI engines — offered?", y:1},
+  {n:38, t:"LEXUS — Hybrid battery/system diagnostics?", y:1},
+  {n:39, t:"RANGE ROVER — Air suspension: bread-and-butter work, or referred out?", y:1},
+ ]},
+ {t:"D. Intervals & Inspections", s:"", q:[
+  {n:40, t:"\"Exotics should be serviced annually at minimum regardless of mileage\" — is that your actual guidance for Ferrari/Maserati/Lamborghini/Bentley?", y:1},
+  {n:41, t:"Typical duration of a pre-purchase inspection?", y:0},
+ ]},
+ {t:"E. Operating Advisor Page", s:"", q:[
+  {n:42, t:"\"$3 million+ raised for Make-A-Wish and children's charities as FOG Gala Chair\" — is this the number you want public? More current figure preferred?", y:1},
+  {n:43, t:"Your board title exactly: \"Board Member, Ferrari Owners Charitable Foundation\" and \"Gala Chair\" — correct?", y:1},
+  {n:44, t:"Patent numbers — do you have them yet? (Paste any you have)", y:1},
+  {n:45, t:"Previous names & years of the three acquired businesses (1996, 2002, 2004)?", y:0},
+  {n:46, t:"Dedicated advisory email address — decided? (Type it in)", y:1},
+ ]},
+ {t:"F. Final Sign-Offs", s:"", q:[
+  {n:47, t:"The homepage hero photo (you with the F430 outside the shop) and the gala portrait — approved for use?", y:1},
+  {n:48, t:"The tagline \"Where Exotic Meets Honest.\" — approved?", y:1},
+  {n:49, t:"The Google Ads copy for the new European & Exotic ads — OK for us to review together before turning on? (We'll bring it to you)", y:1},
+ ]},
+];
+
+const answers = {};
+let totalQ = 0;
+const form = document.getElementById('form');
+SECTIONS.forEach(sec=>{
+  const s = document.createElement('div'); s.className='sec';
+  s.innerHTML = `<div class="sec-title">${sec.t}</div>` + (sec.s?`<div class="sec-sub">${sec.s}</div>`:'');
+  sec.q.forEach(q=>{
+    totalQ++;
+    const d = document.createElement('div'); d.className='q'; d.id='q'+q.n;
+    let btns = q.y ? `<div class="btns">
+      <button onclick="setA(${q.n},'YES',this)">Yes</button>
+      <button onclick="setA(${q.n},'NO',this)">No</button>
+      <button onclick="setA(${q.n},'NOT SURE',this)">Not sure</button></div>` : '';
+    d.innerHTML = `<span class="q-num">${q.n}</span><div class="q-text">${q.t}</div>${btns}
+      <textarea placeholder="${q.y?'Optional comment / detail…':'Type your answer here…'}" oninput="setC(${q.n},this.value)"></textarea>`;
+    s.appendChild(d);
+    answers[q.n] = {q:q.t, a:null, c:'', needsA:q.y};
+  });
+  form.appendChild(s);
+});
+
+function setA(n, val, btn){
+  answers[n].a = val;
+  const row = btn.parentElement.querySelectorAll('button');
+  row.forEach(b=>b.className='');
+  btn.className = val==='YES'?'on-yes':(val==='NO'?'on-no':'on-unsure');
+  mark(n); prog();
+}
+function setC(n, v){ answers[n].c = v.trim(); mark(n); prog(); }
+function mark(n){
+  const a = answers[n];
+  const done = a.needsA ? !!a.a : !!a.c;
+  document.getElementById('q'+n).classList.toggle('answered', done);
+}
+function countDone(){
+  return Object.values(answers).filter(a=> a.needsA ? !!a.a : !!a.c).length;
+}
+function prog(){
+  document.getElementById('prog').textContent = countDone() + ' / ' + totalQ + ' answered';
+}
+prog();
+
+/* ── Answer delivery ──────────────────────────────────────────────────────
+   Paste the Web3Forms access key below to have finished forms emailed to
+   Matthew automatically. Get a free key in ~30 seconds (no account needed):
+     1. Go to https://web3forms.com
+     2. Enter matthew@heliumultra.com as the destination email
+     3. The access key is emailed to you instantly — paste it between the quotes.
+   Until a real key is in place, the form still works and downloads a file.       */
+const WEB3FORMS_ACCESS_KEY = "REPLACE_WITH_WEB3FORMS_ACCESS_KEY";
+
+function buildReport(done){
+  let out = `T&R WEBSITE FACT CHECK — TONY'S ANSWERS\nCompleted: ${new Date().toLocaleString()}\nAnswered: ${done}/${totalQ}\n${'='.repeat(50)}\n\n`;
+  Object.keys(answers).sort((a,b)=>a-b).forEach(n=>{
+    const a = answers[n];
+    out += `${n}. ${a.q}\n   ANSWER: ${a.a || (a.c?'(comment only)':'— skipped —')}\n`;
+    if(a.c) out += `   COMMENT: ${a.c}\n`;
+    out += '\n';
+  });
+  return out;
+}
+
+function downloadReport(out){
+  const blob = new Blob([out], {type:'text/plain'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'tony-fact-check-answers.txt';
+  link.click();
+}
+
+async function emailReport(out, done){
+  if(!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY.indexOf('REPLACE_WITH') === 0) return false;
+  try{
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method:'POST',
+      headers:{'Content-Type':'application/json', 'Accept':'application/json'},
+      body: JSON.stringify({
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: `T&R Fact Check — Tony's answers (${done}/${totalQ})`,
+        from_name: "T&R Fact Check Form",
+        message: out
+      })
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
+
+document.getElementById('finish').onclick = async ()=>{
+  const btn = document.getElementById('finish');
+  const done = countDone();
+  if(done < totalQ && !confirm(`You've answered ${done} of ${totalQ}. Send anyway? (You can note the rest by phone.)`)) return;
+  const out = buildReport(done);
+
+  // Always keep a local copy for Tony as a backup.
+  downloadReport(out);
+
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Sending…';
+  const sent = await emailReport(out, done);
+  btn.disabled = false; btn.textContent = label;
+
+  if(sent){
+    alert('Sent! Your answers have gone straight to Matthew. A copy also saved to your device as "tony-fact-check-answers.txt" just in case.');
+  }else{
+    alert('Saved! Please send the file "tony-fact-check-answers.txt" back to Matthew.');
+  }
+};
+</script>
+</body>
+</html>
