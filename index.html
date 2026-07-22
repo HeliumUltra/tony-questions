@@ -62,10 +62,7 @@ const SECTIONS = [
   {n:2, t:"Can small preventative work (wipers, fluids) often be done same-day if people call ahead?", y:1},
   {n:3, t:"Do you still offer fleet service? Any minimum fleet size or details?", y:1},
   {n:4, t:"\"We work with most extended warranty providers\" — accurate? Any to name or avoid?", y:1},
-  {n:5, t:"Do you do body/collision work?", y:1, opts:[
-    {label:"We do body work", val:"We do body work", cls:"on-yes"},
-    {label:"We do NOT do body work", val:"We do NOT do body work", cls:"on-no"},
-    {label:"Not sure", val:"NOT SURE", cls:"on-unsure"}]},
+  {n:5, t:"Do you do body work?", y:1},
   {n:6, t:"Is there an oldest-era cutoff for cars you'll take (generally or per brand)?", y:1},
  ]},
  {t:"B. Capabilities", s:"Yes / No / \"Yes, but…\" in the comment.", q:[
@@ -113,13 +110,11 @@ const SECTIONS = [
   {n:42, t:"\"$3 million+ raised for Make-A-Wish and children's charities as FOG Gala Chair\" — is this the number you want public? More current figure preferred?", y:1},
   {n:43, t:"Your board title exactly: \"Board Member, Ferrari Owners Charitable Foundation\" and \"Gala Chair\" — correct?", y:1},
   {n:44, t:"Patent numbers — do you have them yet? (Paste any you have)", y:1},
-  {n:45, t:"Previous names & years of the three acquired businesses (1996, 2002, 2004)?", y:0},
   {n:46, t:"Dedicated advisory email address — decided? (Type it in)", y:1},
  ]},
  {t:"F. Final Sign-Offs", s:"", q:[
   {n:47, t:"The homepage hero photo (you with the F430 outside the shop) and the gala portrait — approved for use?", y:1},
   {n:48, t:"The tagline \"Where Exotic Meets Honest.\" — approved?", y:1},
-  {n:49, t:"The Google Ads copy for the new European & Exotic ads — OK for us to review together before turning on? (We'll bring it to you)", y:1},
  ]},
 ];
 
@@ -169,6 +164,27 @@ function countDone(){
 function prog(){
   document.getElementById('prog').textContent = countDone() + ' / ' + totalQ + ' answered';
 }
+prog();
+
+/* Pre-filled answers already known — Tony can change any of these. */
+const PREFILL = {
+  2:{a:'YES'}, 13:{a:'YES'}, 15:{a:'YES', c:'All models'},
+  23:{a:'YES'}, 42:{a:'YES'}, 43:{a:'YES'}, 44:{a:'YES', c:'We have the patent numbers'}
+};
+Object.keys(PREFILL).forEach(n=>{
+  const pf = PREFILL[n];
+  const qEl = document.getElementById('q'+n);
+  if(!qEl) return;
+  if(pf.a){
+    qEl.querySelectorAll('.btns button').forEach(b=>{
+      if(b.textContent.trim().toLowerCase() === pf.a.toLowerCase()) b.click();
+    });
+  }
+  if(pf.c){
+    const ta = qEl.querySelector('textarea');
+    if(ta){ ta.value = pf.c; setC(n, pf.c); }
+  }
+});
 prog();
 
 /* ── Answer delivery ──────────────────────────────────────────────────────
