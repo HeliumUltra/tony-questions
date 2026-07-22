@@ -42,17 +42,17 @@
 <body>
 <header>
   <h1>T&amp;R <span>Website</span> Fact Check</h1>
-  <p>Tony — tap Yes / No / Not sure on each, add a comment where you have detail.<br>Takes about 20 minutes. Hit FINISH at the end to save your answers.</p>
+  <p>Tony — tap Yes / No / Not sure on each, add a comment where you have detail.<br>Takes about 20 minutes. Hit FINISH at the end to send your answers.</p>
 </header>
 
 <div class="wrap">
-  <div class="warn">⚠️ Please complete this in one sitting — answers aren't saved until you tap <b>FINISH &amp; DOWNLOAD</b> at the bottom, which saves a file to send back.</div>
+  <div class="warn">⚠️ Please complete this in one sitting — answers aren't sent until you tap <b>FINISH &amp; SEND</b> at the bottom, which emails them straight to the T&amp;R team.</div>
   <div id="form"></div>
 </div>
 
 <div class="footer-bar">
   <span class="progress" id="prog">0 / 0 answered</span>
-  <button id="finish">Finish &amp; Download Answers</button>
+  <button id="finish">Finish &amp; Send Answers</button>
 </div>
 
 <script>
@@ -239,18 +239,17 @@ document.getElementById('finish').onclick = async ()=>{
   if(done < totalQ && !confirm(`You've answered ${done} of ${totalQ}. Send anyway? (You can note the rest by phone.)`)) return;
   const out = buildReport(done);
 
-  // Always keep a local copy for Tony as a backup.
-  downloadReport(out);
-
   const label = btn.textContent;
   btn.disabled = true; btn.textContent = 'Sending…';
   const sent = await emailReport(out, done);
   btn.disabled = false; btn.textContent = label;
 
   if(sent){
-    alert('Sent! Your answers have gone straight to Matthew. A copy also saved to your device as "tony-fact-check-answers.txt" just in case.');
+    alert('Sent! Your answers have been emailed to the T&R team. Thank you, Tony — nothing else needed.');
   }else{
-    alert('Saved! Please send the file "tony-fact-check-answers.txt" back to Matthew.');
+    // Email didn't go through — fall back to a downloadable file to send manually.
+    downloadReport(out);
+    alert('Couldn’t send automatically. A file "tony-fact-check-answers.txt" was saved to your device — please email it to Matthew (matthew@heliumultra.com).');
   }
 };
 </script>
