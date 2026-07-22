@@ -62,7 +62,10 @@ const SECTIONS = [
   {n:2, t:"Can small preventative work (wipers, fluids) often be done same-day if people call ahead?", y:1},
   {n:3, t:"Do you still offer fleet service? Any minimum fleet size or details?", y:1},
   {n:4, t:"\"We work with most extended warranty providers\" — accurate? Any to name or avoid?", y:1},
-  {n:5, t:"Confirm: you do NOT do body/collision work?", y:1},
+  {n:5, t:"Do you do body/collision work?", y:1, opts:[
+    {label:"We do body work", val:"We do body work", cls:"on-yes"},
+    {label:"We do NOT do body work", val:"We do NOT do body work", cls:"on-no"},
+    {label:"Not sure", val:"NOT SURE", cls:"on-unsure"}]},
   {n:6, t:"Is there an oldest-era cutoff for cars you'll take (generally or per brand)?", y:1},
  ]},
  {t:"B. Capabilities", s:"Yes / No / \"Yes, but…\" in the comment.", q:[
@@ -129,10 +132,16 @@ SECTIONS.forEach(sec=>{
   sec.q.forEach(q=>{
     totalQ++;
     const d = document.createElement('div'); d.className='q'; d.id='q'+q.n;
-    let btns = q.y ? `<div class="btns">
+    let btns = '';
+    if(q.opts){
+      btns = `<div class="btns">` + q.opts.map(o=>
+        `<button onclick="setA(${q.n},'${o.val}',this,'${o.cls}')">${o.label}</button>`).join('') + `</div>`;
+    } else if(q.y){
+      btns = `<div class="btns">
       <button onclick="setA(${q.n},'YES',this)">Yes</button>
       <button onclick="setA(${q.n},'NO',this)">No</button>
-      <button onclick="setA(${q.n},'NOT SURE',this)">Not sure</button></div>` : '';
+      <button onclick="setA(${q.n},'NOT SURE',this)">Not sure</button></div>`;
+    }
     d.innerHTML = `<span class="q-num">${q.n}</span><div class="q-text">${q.t}</div>${btns}
       <textarea placeholder="${q.y?'Optional comment / detail…':'Type your answer here…'}" oninput="setC(${q.n},this.value)"></textarea>`;
     s.appendChild(d);
@@ -141,11 +150,11 @@ SECTIONS.forEach(sec=>{
   form.appendChild(s);
 });
 
-function setA(n, val, btn){
+function setA(n, val, btn, cls){
   answers[n].a = val;
   const row = btn.parentElement.querySelectorAll('button');
   row.forEach(b=>b.className='');
-  btn.className = val==='YES'?'on-yes':(val==='NO'?'on-no':'on-unsure');
+  btn.className = cls || (val==='YES'?'on-yes':(val==='NO'?'on-no':'on-unsure'));
   mark(n); prog();
 }
 function setC(n, v){ answers[n].c = v.trim(); mark(n); prog(); }
